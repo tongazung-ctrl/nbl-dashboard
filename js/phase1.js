@@ -265,19 +265,36 @@
     for (const x of phase.attractions.items) {
       if (!x.on_map || !x.xy) continue;
       if (phase.tourFilter !== "ทั้งหมด" && x.category !== phase.tourFilter) continue;
+      const wrap = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      wrap.setAttribute("class", "pin-tour-g map-hit");
+      wrap.setAttribute("transform", "translate(" + x.xy[0] + "," + x.xy[1] + ")");
+      wrap.setAttribute("data-tip", x.name);
+      let typ = (x.type || x.category || "").split("(")[0].trim();
+      if (typ.length > 42) typ = typ.split("/")[0].trim();
+      const sub = [typ, x.district ? ("อ." + x.district) : ""].filter(Boolean).join(" · ");
+      wrap.setAttribute("data-tip-sub", sub);
+      wrap.setAttribute("data-tip-kind", "สถานที่ท่องเที่ยว");
+      wrap.setAttribute("tabindex", "0");
+      wrap.setAttribute("role", "button");
+      wrap.setAttribute("aria-label", x.name);
+      const hit = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      hit.setAttribute("class", "hit-area");
+      hit.setAttribute("r", "13");
+      hit.setAttribute("fill", "transparent");
       const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      c.setAttribute("cx", x.xy[0]); c.setAttribute("cy", x.xy[1]);
-      c.setAttribute("r", "6"); c.setAttribute("fill", "#FDE68A");
-      c.setAttribute("stroke", "#0b1a28"); c.setAttribute("stroke-width", "1.2");
       c.setAttribute("class", "pin-tour");
-      c.setAttribute("tabindex", "0");
-      c.setAttribute("role", "button");
-      c.setAttribute("aria-label", x.name);
-      c.addEventListener("click", () => {
+      c.setAttribute("r", "6");
+      c.setAttribute("fill", "#FDE68A");
+      c.setAttribute("stroke", "#0b1a28");
+      c.setAttribute("stroke-width", "1.2");
+      c.setAttribute("pointer-events", "none");
+      wrap.addEventListener("click", () => {
         const el = $("tourism");
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
       });
-      g.appendChild(c);
+      wrap.appendChild(hit);
+      wrap.appendChild(c);
+      g.appendChild(wrap);
     }
     svg.appendChild(g);
   };

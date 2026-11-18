@@ -6,6 +6,7 @@
   const RAIN_DROPS_PER_PCT = 0.7;
   const PARTICLES = 26;
   const PIN_R = 8;
+  const HIT_R = 11;
   const EDGE_INSET = 40;
   const APPROX_R = 24;
   const CENTER = "เมืองหนองบัวลำภู";
@@ -130,6 +131,140 @@
     return pins;
   }
 
+
+  /* ---------- map hover tooltips ---------- */
+  let tipEl = null;
+  let tipSticky = false;
+  let lastPtr = { x: 0, y: 0, has: false };
+  let tipsBound = false;
+
+  function ensureTip() {
+    if (tipEl && tipEl.isConnected) return tipEl;
+    tipEl = document.createElement("div");
+    tipEl.className = "map-tip";
+    tipEl.setAttribute("role", "tooltip");
+    tipEl.id = "map-tip";
+    tipEl.hidden = true;
+    document.body.appendChild(tipEl);
+    return tipEl;
+  }
+
+  function tipFromNode(node) {
+    const root = $("map-svg");
+    if (!node || !root) return null;
+    const hit = node.closest ? node.closest("[data-tip]") : null;
+    if (!hit || !root.contains(hit)) return null;
+    return {
+      title: hit.getAttribute("data-tip") || "",
+      sub: hit.getAttribute("data-tip-sub") || "",
+      kind: hit.getAttribute("data-tip-kind") || "",
+      node: hit,
+    };
+  }
+
+  function positionTip(cx, cy) {
+    const el = ensureTip();
+    const pad = 10;
+    const gap = 14;
+    el.style.left = "0px";
+    el.style.top = "0px";
+    const r = el.getBoundingClientRect();
+    let x = cx + gap;
+    let y = cy - r.height - 12;
+    if (x + r.width + pad > window.innerWidth) x = cx - r.width - gap;
+    if (x < pad) x = pad;
+    if (y < pad) y = cy + gap;
+    if (y + r.height + pad > window.innerHeight) y = Math.max(pad, window.innerHeight - r.height - pad);
+    el.style.left = Math.round(x) + "px";
+    el.style.top = Math.round(y) + "px";
+  }
+
+  function showMapTip(info, cx, cy) {
+    if (!info || !info.title) return;
+    const el = ensureTip();
+    const kind = info.kind ? `<div class="map-tip-kind">${esc(info.kind)}</div>` : "";
+    const sub = info.sub ? `<div class="map-tip-sub">${esc(info.sub)}</div>` : "";
+    el.innerHTML = `${kind}<div class="map-tip-title">${esc(info.title)}</div>${sub}`;
+    el.hidden = false;
+    positionTip(cx, cy);
+  }
+
+  function hideMapTip() {
+    if (tipEl) tipEl.hidden = true;
+    tipSticky = false;
+  }
+
+  function refreshMapTip() {
+    if (!lastPtr.has) return;
+    const under = document.elementFromPoint(lastPtr.x, lastPtr.y);
+    const info = tipFromNode(under);
+    if (info) showMapTip(info, lastPtr.x, lastPtr.y);
+    else if (!tipSticky) {
+      if (tipEl) tipEl.hidden = true;
+    }
+  }
+
+  function bindMapTips() {
+    const root = $("map-svg");
+    if (!root || tipsBound) return;
+    tipsBound = true;
+    const onMove = (e) => {
+      lastPtr = { x: e.clientX, y: e.clientY, has: true };
+      const info = tipFromNode(e.target);
+      if (info) {
+        if (e.pointerType !== "touch") tipSticky = false;
+        showMapTip(info, e.clientX, e.clientY);
+      } else if (!tipSticky) {
+        if (tipEl) tipEl.hidden = true;
+      }
+    };
+    root.addEventListener("pointerover", onMove);
+    root.addEventListener("pointermove", onMove);
+    root.addEventListener("pointerdown", (e) => {
+      lastPtr = { x: e.clientX, y: e.clientY, has: true };
+      const info = tipFromNode(e.target);
+      if (!info) return;
+      showMapTip(info, e.clientX, e.clientY);
+      if (e.pointerType === "touch") tipSticky = true;
+    });
+    root.addEventListener("touchstart", (e) => {
+      const tch = e.changedTouches && e.changedTouches[0];
+      if (!tch) return;
+      lastPtr = { x: tch.clientX, y: tch.clientY, has: true };
+      const info = tipFromNode(e.target);
+      if (!info) return;
+      tipSticky = true;
+      showMapTip(info, tch.clientX, tch.clientY);
+    }, { passive: true });
+    root.addEventListener("pointerleave", (e) => {
+      if (tipSticky) return;
+      if (e.relatedTarget && root.contains(e.relatedTarget)) return;
+      // innerHTML replace during rerender can fire leave on a detached node
+      if (lastPtr.has) {
+        const under = document.elementFromPoint(lastPtr.x, lastPtr.y);
+        if (tipFromNode(under) || (under && root.contains(under))) return;
+      }
+      if (tipEl) tipEl.hidden = true;
+    });
+    root.addEventListener("focusin", (e) => {
+      const info = tipFromNode(e.target);
+      if (!info) return;
+      const r = e.target.getBoundingClientRect();
+      lastPtr = { x: r.left + r.width / 2, y: r.top, has: true };
+      showMapTip(info, lastPtr.x, lastPtr.y);
+    });
+    root.addEventListener("focusout", () => {
+      if (!tipSticky && tipEl) tipEl.hidden = true;
+    });
+    document.addEventListener("pointerdown", (e) => {
+      if (!tipSticky) return;
+      if (e.target && (e.target.closest && (e.target.closest("[data-tip]") || e.target.closest(".map-tip")))) return;
+      hideMapTip();
+    }, true);
+    window.addEventListener("scroll", () => { if (!tipSticky && tipEl) tipEl.hidden = true; }, { passive: true, capture: true });
+    window.addEventListener("resize", () => { if (tipEl && !tipEl.hidden && lastPtr.has) positionTip(lastPtr.x, lastPtr.y); });
+  }
+
   /* ---------- render map ---------- */
   function renderMap() {
     const m = state.map;
@@ -155,17 +290,28 @@
 
     let vdots = "";
     if (state.showV) {
+      const ampOf = (p) => state.meta.districts[p.amp] || "";
+      const tamOf = (p) => (state.villages.tambons[p.tam] || {}).t || "";
       for (const p of pts) {
         if (p.isTam) continue;
         const col = rainColor(cellOf(p.i).d[0][2]);
         const on = p.i === vp.i;
-        vdots += `<circle class="vdot" data-vi="${p.i}" cx="${p.x}" cy="${p.y}" r="${on ? 4.5 : 2.4}" fill="${col}" opacity="${on ? 1 : 0.7}" stroke="${on ? "#fff" : "none"}" stroke-width="1"/>`;
+        const sub = "ต." + tamOf(p) + " · อ." + ampOf(p);
+        vdots += `<g class="map-hit" data-vi="${p.i}" data-tip="${esc(p.name)}" data-tip-sub="${esc(sub)}" data-tip-kind="หมู่บ้าน" transform="translate(${p.x},${p.y})">
+          <circle class="hit-area" r="${HIT_R}" fill="transparent"/>
+          <circle class="vdot" r="${on ? 4.5 : 2.4}" fill="${col}" opacity="${on ? 1 : 0.7}" stroke="${on ? "#fff" : "none"}" stroke-width="1" pointer-events="none"/>
+        </g>`;
       }
       for (const p of pts) {
         if (!p.isTam) continue;
         const col = rainColor(cellOf(p.i).d[0][2]);
         const on = p.i === vp.i;
-        vdots += `<circle class="tdot" data-vi="${p.i}" cx="${p.x}" cy="${p.y}" r="${on ? 6 : 4.2}" fill="${col}" stroke="#fff" stroke-width="${on ? 1.6 : 0.8}" opacity=".95"/>`;
+        const title = "ต." + tamOf(p) + " (จุดกลางตำบล)";
+        const sub = "อ." + ampOf(p);
+        vdots += `<g class="map-hit" data-vi="${p.i}" data-tip="${esc(title)}" data-tip-sub="${esc(sub)}" data-tip-kind="ตำบล" transform="translate(${p.x},${p.y})">
+          <circle class="hit-area" r="${HIT_R + 1}" fill="transparent"/>
+          <circle class="tdot" r="${on ? 6 : 4.2}" fill="${col}" stroke="#fff" stroke-width="${on ? 1.6 : 0.8}" opacity=".95" pointer-events="none"/>
+        </g>`;
       }
     }
 
@@ -184,10 +330,15 @@
       const col2 = p.b.crops[1] ? state.meta.crop_color[p.b.crops[1]] : col;
       const on = p.b.id === state.selBuyer;
       const dim = !match(p.b);
-      return `<g class="nb-pin" data-bid="${esc(p.b.id)}" transform="translate(${p.x},${p.y})" opacity="${dim ? 0.25 : 1}" tabindex="0" role="button" aria-label="${esc(p.b.name)}">
-        ${on ? `<circle class="nb-pulse" r="8" fill="${col}" opacity=".5"/>` : ""}
-        <circle class="nb-core" r="${on ? 10 : PIN_R}" fill="url(#pin-${esc(p.b.id)})" stroke="#fff" stroke-width="1.4"/>
-        ${p.approx ? `<circle r="13" fill="none" stroke="${col}" stroke-dasharray="3 3" opacity=".7"/>` : ""}
+      const loc = p.out
+        ? (p.b.district && p.b.district !== "ใกล้เคียง" ? "นอกจังหวัด · " + p.b.district : "นอกจังหวัด")
+        : (p.b.district ? "อ." + p.b.district : "");
+      const tipSub = [p.b.type, loc].filter(Boolean).join(" · ");
+      return `<g class="nb-pin map-hit" data-bid="${esc(p.b.id)}" data-tip="${esc(p.b.name)}" data-tip-sub="${esc(tipSub)}" data-tip-kind="จุดรับซื้อ" transform="translate(${p.x},${p.y})" opacity="${dim ? 0.25 : 1}" tabindex="0" role="button" aria-label="${esc(p.b.name)}">
+        <circle class="hit-area" r="16" fill="transparent"/>
+        ${on ? `<circle class="nb-pulse" r="8" fill="${col}" opacity=".5" pointer-events="none"/>` : ""}
+        <circle class="nb-core" r="${on ? 10 : PIN_R}" fill="url(#pin-${esc(p.b.id)})" stroke="#fff" stroke-width="1.4" pointer-events="none"/>
+        ${p.approx ? `<circle r="13" fill="none" stroke="${col}" stroke-dasharray="3 3" opacity=".7" pointer-events="none"/>` : ""}
         <defs><linearGradient id="pin-${esc(p.b.id)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${col}"/><stop offset="1" stop-color="${col2}"/></linearGradient></defs>
       </g>`;
     }).join("");
@@ -205,8 +356,8 @@
       </defs>
       ${neigh}
       ${dists}
-      <g filter="url(#nbGlow)">${vdots}</g>
       ${wxpts}
+      <g filter="url(#nbGlow)">${vdots}</g>
       ${pinSvg}
     </svg>`;
 
@@ -234,6 +385,8 @@
     renderTicker();
     const svg = $("map-svg").querySelector("svg");
     if (window.NBLPhase1 && window.NBLPhase1.drawTourism && svg) window.NBLPhase1.drawTourism(svg, state);
+    bindMapTips();
+    refreshMapTip();
   }
 
   function renderVfx(raining, rainPct, cloudy, sunny) {

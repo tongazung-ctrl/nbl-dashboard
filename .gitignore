@@ -1,3 +1,6 @@
 .DS_Store
 *.pyc
 __pycache__/
+
+# local hover QA screenshots, not part of the site
+qa-hover-*.png
