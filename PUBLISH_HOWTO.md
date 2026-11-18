@@ -100,9 +100,35 @@ curl -sS -o /tmp/nbl.html -w "%{http_code} %{url_effective}\n" \
 
 Open Graph ใส่ไว้แล้ว (`og:title`, `og:description`, `og:image` 1200×630) ถ้าเฟสยังโชว์พรีวิวเก่า ให้ใช้ Facebook Sharing Debugger แล้วกด scrape ใหม่ อย่าส่งโพสต์จนกว่าป๋าจะยืนยันข้อความ
 
-## 5) อัปเดตรายวัน (สำหรับรูทีน 08:00 เวลาไทย)
+## 5) อัปเดตรายวัน (08:00 เวลาไทย)
 
-ทำบนกล่อง ที่โฟลเดอร์งานเดิม แล้วคัดลอกเข้าไซต์สาธารณะ ห้ามแต่งตัวเลข ถ้าแหล่งใดล่มให้คงค่าเดิม
+กลไกหลักหลังเปิดคลังแล้วคือ **GitHub Actions ฟรี** ไฟล์ `.github/workflows/daily-refresh.yml` ตั้ง cron เป็น `0 1 * * *` (01:00 น. UTC = 08:00 น. เวลาไทย) และกดรันมือได้ที่แท็บ Actions (workflow_dispatch)
+
+แต่ละรอบจะรัน `python tools/refresh_all.py` แล้วคอมมิตเฉพาะไฟล์ที่เปลี่ยน:
+
+- `data/daily.json` อากาศ 6 อำเภอจาก Open-Meteo
+- `data/villages_daily.json` พยากรณ์รายช่องกริด ECMWF IFS + ฝนสถานี ThaiWater
+- `data/air.json` สถานี Air4Thai 115t + พยากรณ์ Open-Meteo AQ
+- `data/rain_alerts.json` เทียบเกณฑ์กรมอุตุฯ จาก `data/config/rain_thresholds.json`
+
+ถ้าแหล่งใดล่ม สคริปต์คงไฟล์เดิมไว้และไม่ทำให้เวิร์กโฟลว์ล้มทั้งงาน ราคา, ตารางกรมอุตุฯ รายจังหวัด, ปฏิทินเกษตร, ลิงก์ช่วยเหลือ และสถิติภูมิอากาศระยะยาว **ไม่ถูกเขียนทับอัตโนมัติ** ต้องอัปเดตแบบคัดกรองตาม `/workspace/nbl_dashboard/UPDATE_HOWTO.md` เมื่อมีค่าใหม่
+
+รูทีน 08:00 บนกล่องไม่ต้องพุชซ้ำทุกวันถ้า Actions ทำงานแล้วคอมมิตได้ ใช้กล่องเป็นทางสำรองเมื่อ Actions ล้ม หรือเมื่อต้องอัปเดตราคา/ตารางกรมอุตุฯ แบบคัดกรอง
+
+คำสั่งสำรองบนกล่อง (ชุดเดียวกับ Actions ไม่ต้องผ่าน `/workspace/nbl_dashboard`):
+
+```bash
+cd /workspace/nbl_site
+python3 tools/refresh_all.py
+git add data/daily.json data/villages_daily.json data/air.json data/rain_alerts.json
+git diff --cached --quiet || git commit -m "Daily data refresh (08:00 Thai)"
+git push origin main
+```
+
+ห้ามแต่งตัวเลข ถ้าแหล่งใดล่ม สคริปต์จะคงไฟล์เดิมไว้
+
+ทางเลือกเดิมถ้าต้องสร้าง `villages_daily.json` จากโฟลเดอร์งาน `/workspace/nbl_dashboard` ก่อน แล้วคัดลอกเข้าไซต์:
+
 
 ### 5.1 อากาศรายตำบล/หมู่บ้าน + สถานีฝน
 

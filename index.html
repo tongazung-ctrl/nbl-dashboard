@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>แดชบอร์ดหนองบัวลำภู: อากาศ และจุดรับซื้อผลผลิตเกษตร</title>
-  <meta name="description" content="แผนที่ 6 อำเภอ 59 ตำบล อากาศรายตำบล/หมู่บ้าน ฝนวัดจริงจากสถานี พยากรณ์ 7 วัน ราคาผลผลิตล่าสุด และจุดรับซื้อในจังหวัดหนองบัวลำภู">
+  <meta name="description" content="แผนที่ 6 อำเภอ อากาศรายหมู่บ้าน ฝุ่น PM2.5 แหล่งท่องเที่ยวในจังหวัด ราคาผลผลิต และจุดรับซื้อหนองบัวลำภู เปิดดูฟรี">
   <meta name="theme-color" content="#061018">
   <link rel="canonical" href="https://tongazung-ctrl.github.io/nbl-dashboard/">
   <meta property="og:type" content="website">
@@ -43,11 +43,16 @@
         </div>
       </a>
       <nav class="nav" aria-label="ส่วนของหน้า">
-        <a href="#now">อากาศตอนนี้</a>
+        <a href="#now">อากาศ</a>
+        <a href="#air">ฝุ่น PM2.5</a>
         <a href="#village">หมู่บ้าน</a>
-        <a href="#wx7">พยากรณ์ 7 วัน</a>
+        <a href="#tourism">ท่องเที่ยว</a>
+        <a href="#calendar">ปฏิทินเกษตร</a>
         <a href="#prices">ราคา</a>
         <a href="#buyers">จุดรับซื้อ</a>
+        <a href="#rain-alert">เตือนฝน</a>
+        <a href="#climate">เที่ยวช่วงไหนดี</a>
+        <a href="#aid">ช่วยเหลือ</a>
         <a href="#wxsrc">แหล่งข้อมูล</a>
       </nav>
     </div>
@@ -101,6 +106,30 @@
       </div>
     </section>
 
+    <section class="block" id="air">
+      <div class="wrap">
+        <h2>คุณภาพอากาศ PM2.5</h2>
+        <p class="caption" id="air-caption">สถานีภาคพื้น Air4Thai รหัส 115t และพยากรณ์โมเดล Open-Meteo (คนละแหล่ง ต้องอ่านป้ายให้ชัด)</p>
+        <div id="air-body">กำลังโหลด…</div>
+      </div>
+    </section>
+
+    <section class="block" id="rain-alert">
+      <div class="wrap">
+        <h2>เตือนฝนจากสถานีวัดจริง</h2>
+        <p class="caption">เทียบปริมาณฝน 24 ชั่วโมงและชั่วโมงล่าสุดกับเกณฑ์กรมอุตุนิยมวิทยา ไม่ใช่ประกาศภัยทางการของจังหวัด</p>
+        <div id="rain-alert-body">กำลังโหลด…</div>
+      </div>
+    </section>
+
+    <section class="block" id="calendar">
+      <div class="wrap">
+        <h2>ปฏิทินเพาะปลูก และคำแนะนำจากอากาศ 7 วัน</h2>
+        <p class="caption">ใช้กรอบฤดูอย่างเป็นทางการของกรมอุตุฯ ประกอบพยากรณ์ของจุดที่เลือกด้านบน เงื่อนไขมาจากไฟล์ตั้งค่า ไม่ใช่คำวินิจฉัยแทนเจ้าหน้าที่</p>
+        <div id="calendar-body">กำลังโหลด…</div>
+      </div>
+    </section>
+
     <section class="block" id="prices">
       <div class="wrap">
         <h2>ราคาผลผลิตอ้างอิง</h2>
@@ -117,6 +146,32 @@
         <p class="caption">16 แห่ง: ในจังหวัดและตลาดใกล้เคียงที่ประกาศราคา · เบอร์โทรตามแหล่งที่เปิดเผย ถ้าไม่มีในแหล่งจะไม่ใส่เบอร์เอง</p>
         <div class="chips" id="buyer-filters"></div>
         <div class="buyer-grid" id="buyer-grid"></div>
+      </div>
+    </section>
+
+    <section class="block" id="tourism">
+      <div class="wrap">
+        <h2>แหล่งท่องเที่ยวในจังหวัด</h2>
+        <p class="caption" id="tourism-caption">จากชุด ททท. เฉพาะจังหวัดหนองบัวลำภู ตรวจพิกัดแล้ว จุดที่พิกัดไม่แน่นอนจะไม่ปักบนแผนที่</p>
+        <div class="chips" id="tourism-filters"></div>
+        <div class="tour-grid" id="tourism-grid"></div>
+        <div id="nearby-body" style="margin-top:18px"></div>
+      </div>
+    </section>
+
+    <section class="block" id="climate">
+      <div class="wrap">
+        <h2>เที่ยวช่วงไหนดี</h2>
+        <p class="caption">กราฟรายเดือนจาก Open-Meteo ปี 2020–2024 (โมเดลย้อนหลัง) ประกอบค่าปกติฝนรวม 30 ปีของกรมอุตุฯ ที่ยืนยันได้ และกรอบฤดูอย่างเป็นทางการ · <a class="nb-link" href="./climate.html">เปิดเป็นหน้าเฉพาะ</a></p>
+        <div id="climate-body">กำลังโหลด…</div>
+      </div>
+    </section>
+
+    <section class="block" id="aid">
+      <div class="wrap">
+        <h2>ประกันภัยพืชผล และช่องทางช่วยเหลือภาครัฐ</h2>
+        <p class="caption">ลิงก์ทางการเท่านั้น ไม่แสดงยอดเงินชดเชยในหน้านี้ เพราะหลักเกณฑ์เปลี่ยนตามปี</p>
+        <div id="aid-body">กำลังโหลด…</div>
       </div>
     </section>
 
@@ -148,5 +203,6 @@
     <div class="wrap">ข้อมูลเปิดเผยจาก Open-Meteo, กรมอุตุนิยมวิทยา, ThaiWater สสน., สศก./NABC, กยท., สมาคมโรงงานมันฯ อีสาน, กระทรวงพาณิชย์, OpenGISData-Thailand, GISTDA และ OpenStreetMap · ไม่ใช่หน้าทางการของราชการ</div>
   </footer>
   <script src="./js/app.js" defer></script>
+  <script src="./js/phase1.js" defer></script>
 </body>
 </html>

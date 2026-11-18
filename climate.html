@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>เที่ยวช่วงไหนดี — หนองบัวลำภู</title>
+  <meta name="description" content="ช่วงเวลาที่โดยทั่วไปเย็นและแห้งกว่าในรอบปี สำหรับเที่ยวหนองบัวลำภู จากสถิติกรมอุตุฯ และชุดย้อนหลัง Open-Meteo">
+  <link rel="canonical" href="https://tongazung-ctrl.github.io/nbl-dashboard/climate.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="th_TH">
+  <meta property="og:title" content="เที่ยวช่วงไหนดี — หนองบัวลำภู">
+  <meta property="og:description" content="กราฟอุณหภูมิและฝนรายเดือน ประกอบค่าปกติฝนรวม 30 ปีของกรมอุตุฯ และกรอบฤดูอย่างเป็นทางการ">
+  <meta property="og:url" content="https://tongazung-ctrl.github.io/nbl-dashboard/climate.html">
+  <meta property="og:image" content="https://tongazung-ctrl.github.io/nbl-dashboard/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body data-page="climate">
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="./">
+        <svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true">
+          <rect width="36" height="36" rx="9" fill="#0b1a28" stroke="#7dd3fc" stroke-width="1.2"/>
+          <path d="M10 26 L14 12 L18 22 L22 10 L26 26" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <div>
+          <h1 class="nb-title">เที่ยวช่วงไหนดี</h1>
+          <p>หนองบัวลำภู · สถิติอากาศ</p>
+        </div>
+      </a>
+      <nav class="nav" aria-label="กลับหน้าหลัก">
+        <a href="./">แดชบอร์ดหลัก</a>
+        <a href="./#tourism">แหล่งท่องเที่ยว</a>
+        <a href="./#air">ฝุ่น PM2.5</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="block" id="climate" style="border-top:0">
+      <div class="wrap">
+        <h2>เที่ยวช่วงไหนดี ที่หนองบัวลำภู</h2>
+        <p class="caption">หน้านี้แยกสถิติราชการกับชุดโมเดลย้อนหลังให้ชัด ไม่ใช่ประกาศทางการว่าต้องมาเดือนใด</p>
+        <div id="climate-body">กำลังโหลด…</div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">ข้อมูลเปิดเผยจากกรมอุตุนิยมวิทยา และ Open-Meteo · <a class="nb-link" href="./">กลับแดชบอร์ดหนองบัวลำภู</a></div>
+  </footer>
+  <script src="./js/phase1.js" defer></script>
+</body>
+</html>

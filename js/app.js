@@ -29,6 +29,7 @@
     liveWx: false,
     liveVillages: false,
     liveNote: "กำลังโหลดข้อมูลสำรอง",
+    showTourism: true,
   };
 
   const $ = (id) => document.getElementById(id);
@@ -231,6 +232,8 @@
     renderMapCard(pins, wx);
     renderStats(pins);
     renderTicker();
+    const svg = $("map-svg").querySelector("svg");
+    if (window.NBLPhase1 && window.NBLPhase1.drawTourism && svg) window.NBLPhase1.drawTourism(svg, state);
   }
 
   function renderVfx(raining, rainPct, cloudy, sunny) {
@@ -285,6 +288,7 @@
       row2.append(btn);
     }
     row2.append(el("button", { class: "nb-chip" + (state.showV ? " is-on" : ""), type: "button", onclick: () => { state.showV = !state.showV; rerender(); } }, state.showV ? "ซ่อนจุดหมู่บ้าน" : "แสดงจุดหมู่บ้าน"));
+    row2.append(el("button", { class: "nb-chip" + (state.showTourism ? " is-on" : ""), type: "button", onclick: () => { state.showTourism = !state.showTourism; rerender(); } }, state.showTourism ? "ซ่อนจุดเที่ยว" : "แสดงจุดเที่ยว"));
     hud.append(row2);
   }
 
@@ -303,7 +307,9 @@
         <p>${esc(b.address || "")}${sel.approx ? " · ตำแหน่งโดยประมาณ" : ""}</p>
         ${phone}
         ${price}
-        <p><a class="nb-link" href="${esc(b.maps)}" target="_blank" rel="noopener">เปิดแผนที่</a> · แหล่ง: <a class="nb-link" href="${esc(b.src)}" target="_blank" rel="noopener">${esc(host(b.src))}</a></p>`;
+        <p><a class="nb-link" href="${esc(b.maps)}" target="_blank" rel="noopener">เปิดแผนที่</a>
+        ${b.lat && b.lon ? ` · <a class="nb-link" href="https://www.google.com/maps/dir/?api=1&destination=${b.lat},${b.lon}" target="_blank" rel="noopener">นำทาง</a>` : ""}
+        · แหล่ง: <a class="nb-link" href="${esc(b.src)}" target="_blank" rel="noopener">${esc(host(b.src))}</a></p>`;
       return;
     }
     const nIn = state.buyers.filter((b) => b.district === state.dist).length;
@@ -585,6 +591,8 @@
         phone, price,
         el("p", {},
           el("a", { class: "nb-link", href: b.maps, target: "_blank", rel: "noopener" }, "เปิดแผนที่"),
+          b.lat && b.lon ? " · " : "",
+          b.lat && b.lon ? el("a", { class: "nb-link", href: "https://www.google.com/maps/dir/?api=1&destination=" + b.lat + "," + b.lon, target: "_blank", rel: "noopener" }, "นำทาง") : null,
           " · ",
           el("a", { class: "nb-link", href: b.src, target: "_blank", rel: "noopener" }, host(b.src))
         )
@@ -766,6 +774,22 @@
       renderVillage();
     }
   }
+
+  window.NBLApp = {
+    rerender,
+    forecastDays() {
+      if (!state.vdaily || !state.villages) return [];
+      const tams = state.villages.tambons;
+      const i = state.vsel || 0;
+      const idx = state.vdaily.cell_of[i];
+      const wx = state.vdaily.wx[idx];
+      if (!wx) return [];
+      return (wx.d || []).map((d, k) => ({
+        rain: d[3],
+        label: (wx.dates && wx.dates[k]) ? wx.dates[k] : ("วัน " + (k + 1)),
+      }));
+    },
+  };
 
   boot();
 })();

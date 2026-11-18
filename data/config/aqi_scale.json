@@ -1,0 +1,56 @@
+{
+  "source": {
+    "name": "ประกาศกรมควบคุมมลพิษ เรื่อง ดัชนีคุณภาพอากาศของประเทศไทย พ.ศ. 2566 (ราชกิจจานุเบกษา 3 ก.ค. 2566)",
+    "url": "https://ratchakitcha.soc.go.th/documents/140D157S0000000000300.pdf",
+    "explain": "https://prd.go.th/main/article/869d5d65-261c-40d4-bd19-d40ac0d0796a",
+    "checked": "2026-11-19",
+    "note": "ใช้สเกล AQI ของประเทศไทย ไม่ใช่ US AQI ของ Open-Meteo ต้องติดป้ายแหล่งแยก"
+  },
+  "levels": [
+    {
+      "id": 1,
+      "aqi_min": 0,
+      "aqi_max": 25,
+      "label": "ดีมาก",
+      "color": "#0ea5e9",
+      "pm25_min": 0,
+      "pm25_max": 15.0
+    },
+    {
+      "id": 2,
+      "aqi_min": 26,
+      "aqi_max": 50,
+      "label": "ดี",
+      "color": "#22c55e",
+      "pm25_min": 15.1,
+      "pm25_max": 25.0
+    },
+    {
+      "id": 3,
+      "aqi_min": 51,
+      "aqi_max": 100,
+      "label": "ปานกลาง",
+      "color": "#eab308",
+      "pm25_min": 25.1,
+      "pm25_max": 37.5
+    },
+    {
+      "id": 4,
+      "aqi_min": 101,
+      "aqi_max": 200,
+      "label": "เริ่มมีผลกระทบต่อสุขภาพ",
+      "color": "#f97316",
+      "pm25_min": 37.6,
+      "pm25_max": 75.0
+    },
+    {
+      "id": 5,
+      "aqi_min": 201,
+      "aqi_max": null,
+      "label": "มีผลกระทบต่อสุขภาพ",
+      "color": "#ef4444",
+      "pm25_min": 75.1,
+      "pm25_max": null
+    }
+  ]
+}

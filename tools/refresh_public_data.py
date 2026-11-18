@@ -14,6 +14,8 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import subprocess
+import time
 import urllib.request
 from datetime import datetime
 from pathlib import Path
@@ -54,9 +56,22 @@ def load(path: Path):
 
 
 def fetch(url: str):
-    req = urllib.request.Request(url, headers={"User-Agent": "nbl-dashboard/1.0"})
-    with urllib.request.urlopen(req, timeout=45) as r:
-        return json.load(r)
+    last = None
+    for attempt in range(1, 4):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "nbl-dashboard/1.0"})
+            with urllib.request.urlopen(req, timeout=45) as r:
+                return json.load(r)
+        except Exception as e:
+            last = e
+            time.sleep(1.5 * attempt)
+    p = subprocess.run(
+        ["curl", "-sS", "-L", "--max-time", "45", "-A", "nbl-dashboard/1.0", url],
+        capture_output=True, text=True,
+    )
+    if p.returncode == 0 and p.stdout:
+        return json.loads(p.stdout)
+    raise last if last is not None else RuntimeError("fetch failed")
 
 
 def refresh_weather(daily: dict) -> None:
