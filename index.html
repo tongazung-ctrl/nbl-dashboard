@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>แดชบอร์ดหนองบัวลำภู: อากาศ และจุดรับซื้อผลผลิตเกษตร</title>
+  <meta name="description" content="แผนที่ 6 อำเภอ 59 ตำบล อากาศรายตำบล/หมู่บ้าน ฝนวัดจริงจากสถานี พยากรณ์ 7 วัน ราคาผลผลิตล่าสุด และจุดรับซื้อในจังหวัดหนองบัวลำภู">
+  <meta name="theme-color" content="#061018">
+  <link rel="canonical" href="https://tongazung-ctrl.github.io/nbl-dashboard/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="th_TH">
+  <meta property="og:site_name" content="แดชบอร์ดหนองบัวลำภู">
+  <meta property="og:title" content="แดชบอร์ดหนองบัวลำภู: อากาศ และจุดรับซื้อผลผลิตเกษตร">
+  <meta property="og:description" content="แผนที่ 6 อำเภอ 59 ตำบล อากาศรายตำบล/หมู่บ้าน ฝนวัดจริงจากสถานี พยากรณ์ 7 วัน ราคาผลผลิต และจุดรับซื้อ พร้อมเบอร์โทร">
+  <meta property="og:url" content="https://tongazung-ctrl.github.io/nbl-dashboard/">
+  <meta property="og:image" content="https://tongazung-ctrl.github.io/nbl-dashboard/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="แผนที่จังหวัดหนองบัวลำภูพร้อมจุดรับซื้อผลผลิตเกษตร">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="แดชบอร์ดหนองบัวลำภู: อากาศ และจุดรับซื้อผลผลิตเกษตร">
+  <meta name="twitter:description" content="แผนที่ 6 อำเภอ อากาศรายหมู่บ้าน ราคาผลผลิต และจุดรับซื้อในจังหวัดหนองบัวลำภู">
+  <meta name="twitter:image" content="https://tongazung-ctrl.github.io/nbl-dashboard/assets/og.png">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./assets/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">ข้ามไปเนื้อหา</a>
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="#map">
+        <svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true">
+          <rect width="36" height="36" rx="9" fill="#0b1a28" stroke="#7dd3fc" stroke-width="1.2"/>
+          <path d="M10 26 L14 12 L18 22 L22 10 L26 26" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <div>
+          <h1 class="nb-title">แดชบอร์ดหนองบัวลำภู</h1>
+          <p>อากาศ · จุดรับซื้อผลผลิตเกษตร</p>
+        </div>
+      </a>
+      <nav class="nav" aria-label="ส่วนของหน้า">
+        <a href="#now">อากาศตอนนี้</a>
+        <a href="#village">หมู่บ้าน</a>
+        <a href="#wx7">พยากรณ์ 7 วัน</a>
+        <a href="#prices">ราคา</a>
+        <a href="#buyers">จุดรับซื้อ</a>
+        <a href="#wxsrc">แหล่งข้อมูล</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="map">
+      <div class="wrap hero-grid">
+        <div class="map-stage" id="map-stage">
+          <div class="aurora" aria-hidden="true"></div>
+          <div class="map-hud" id="map-hud"></div>
+          <div id="map-svg"></div>
+          <div class="vfx" id="vfx" aria-hidden="true"></div>
+          <div class="map-overlay">
+            <div class="map-stats" id="map-stats"></div>
+            <aside class="nb-glass map-card" id="map-card"></aside>
+          </div>
+          <div class="ticker-wrap"><div class="ticker" id="ticker"></div></div>
+        </div>
+        <div class="side">
+          <article class="nb-glass panel" id="now">
+            <div id="now-panel">กำลังโหลดข้อมูล…</div>
+          </article>
+          <article class="nb-glass panel" id="tmd-mini"></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="village">
+      <div class="wrap">
+        <h2>อากาศรายหมู่บ้าน / ตำบล</h2>
+        <p class="caption" id="village-caption"></p>
+        <div class="filters" id="village-filters"></div>
+        <div id="village-body"></div>
+      </div>
+    </section>
+
+    <section class="block" id="wx7">
+      <div class="wrap">
+        <h2 id="wx7-title">พยากรณ์ 7 วัน</h2>
+        <p class="caption">Open-Meteo ที่จุดกลางอำเภอ · รายอำเภอใช้ค่าตั้งต้นของ Open-Meteo (ช่องกริด ECMWF เดียวกัน และมีค่าดัชนี UV)</p>
+        <div class="grid-7" id="wx7-grid"></div>
+      </div>
+    </section>
+
+    <section class="block" id="tmd">
+      <div class="wrap">
+        <h2>พยากรณ์ทางการ กรมอุตุนิยมวิทยา (ทั้งจังหวัด)</h2>
+        <p class="caption">รายจังหวัดเท่านั้น ไม่แยกอำเภอหรือหมู่บ้าน</p>
+        <div id="tmd-body"></div>
+      </div>
+    </section>
+
+    <section class="block" id="prices">
+      <div class="wrap">
+        <h2>ราคาผลผลิตอ้างอิง</h2>
+        <p class="caption">ห้ามแต่งราคา ถ้าผู้รับซื้อในจังหวัดไม่ประกาศราคา จะแสดงราคาอ้างอิงพร้อมวันที่และแหล่ง · ป้าย “ผู้ซื้อ” คือราคาของผู้รับซื้อรายนั้น</p>
+        <div class="chips" id="price-crops"></div>
+        <div class="table-wrap" id="price-table"></div>
+        <div id="series-block" style="margin-top:18px"></div>
+      </div>
+    </section>
+
+    <section class="block" id="buyers">
+      <div class="wrap">
+        <h2>จุดรับซื้อผลผลิตเกษตร</h2>
+        <p class="caption">16 แห่ง: ในจังหวัดและตลาดใกล้เคียงที่ประกาศราคา · เบอร์โทรตามแหล่งที่เปิดเผย ถ้าไม่มีในแหล่งจะไม่ใส่เบอร์เอง</p>
+        <div class="chips" id="buyer-filters"></div>
+        <div class="buyer-grid" id="buyer-grid"></div>
+      </div>
+    </section>
+
+    <section class="block" id="wxsrc">
+      <div class="wrap">
+        <h2>แหล่งข้อมูลอากาศ และความละเอียดจริง</h2>
+        <p class="caption">ตรวจสอบเมื่อ 18 พ.ย. 2569 ไม่มีแหล่งไหนทำพยากรณ์แยกทีละหมู่บ้านจริง ทุกแหล่งให้ค่าตามช่องกริดของโมเดล</p>
+        <div id="wxsrc-body"></div>
+      </div>
+    </section>
+
+    <section class="block" id="gaps">
+      <div class="wrap">
+        <h2>ข้อมูลที่ยังหาไม่ได้</h2>
+        <div class="gap-list" id="gaps-body"></div>
+      </div>
+    </section>
+
+    <section class="block" id="sources">
+      <div class="wrap">
+        <h2>แหล่งข้อมูล</h2>
+        <div class="links" id="sources-body"></div>
+        <p class="muted" style="margin-top:16px">หน้านี้อัปเดตทุกวัน วันหยุดราชการ สศก. และ กยท. ไม่มีราคาใหม่ จะคงวันที่เดิมไว้ · เว็บสาธารณะฟรี ไม่มีค่าใช้จ่ายในการเข้าดู</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">ข้อมูลเปิดเผยจาก Open-Meteo, กรมอุตุนิยมวิทยา, ThaiWater สสน., สศก./NABC, กยท., สมาคมโรงงานมันฯ อีสาน, กระทรวงพาณิชย์, OpenGISData-Thailand, GISTDA และ OpenStreetMap · ไม่ใช่หน้าทางการของราชการ</div>
+  </footer>
+  <script src="./js/app.js" defer></script>
+</body>
+</html>
